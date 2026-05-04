@@ -1,17 +1,42 @@
-(function() {
-    var url = "https://takaiwebsite.neocities.org/minecraft";
-    var win = window.open('about:blank', '_blank');
-    if (win) {
-        win.document.body.style.margin = '0';
-        win.document.body.style.height = '100vh';
-        var iframe = win.document.createElement('iframe');
-        iframe.style.border = 'none';
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.margin = '0';
-        iframe.src = url;
-        win.document.body.appendChild(iframe);
-    } else {
-        alert("Pop-up blocked! Please allow pop-ups for this site.");
-    }
-})();
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Classroom</title>
+    <style>
+        body { background-color: white; font-family: sans-serif; }
+    </style>
+</head>
+<body>
+    <script>
+        // The URL of the game
+        var gameUrl = "https://takaiwebsite.neocities.org/minecraft";
+
+        // 1. Open the about:blank window
+        var win = window.open('about:blank', '_blank');
+
+        if (win) {
+            // 2. Set up the blank page styles
+            win.document.title = "Classes";
+            win.document.body.style.margin = '0';
+            win.document.body.style.height = '100vh';
+            win.document.body.style.overflow = 'hidden';
+
+            // 3. Create and inject the iframe
+            var iframe = win.document.createElement('iframe');
+            iframe.style.border = 'none';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.margin = '0';
+            iframe.src = gameUrl;
+            
+            win.document.body.appendChild(iframe);
+
+            // 4. Redirect the current GitHub tab to look innocent
+            window.location.replace("https://classroom.google.com");
+        } else {
+            // If the browser blocks the popup, show a start button
+            document.body.innerHTML = "<h1>Click to launch Classroom</h1><button onclick='location.reload()'>Launch</button>";
+        }
+    </script>
+</body>
+</html>
