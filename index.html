@@ -1,42 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Google Classroom</title>
+    <title>Launcher</title>
     <style>
-        body { background-color: white; font-family: sans-serif; }
+        body {
+            background-color: black;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 60px;
+        }
+        #arrow {
+            font-size: 40px;
+            display: none;
+            margin-top: 20px;
+        }
+        #warning {
+            display: none;
+            margin-top: 10px;
+        }
+        button {
+            padding: 12px 28px;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- Google Classroom logo (allowed as decoration) -->
+    <img src="https://ssl.gstatic.com/classroom/ic_product_classroom_96.png" alt="Google Classroom">
+
+    <h1>Launch Website</h1>
+    <button onclick="launch()">Launch</button>
+
+    <div id="warning">Popup blocked — check the top right of your browser.</div>
+    <div id="arrow">⬆️</div>
+
     <script>
-        // The URL of the game
-        var gameUrl = "https://takaiwebsite.neocities.org/minecraft";
+        function launch() {
+            const url = "https://takaiwebsite.neocities.org/minecraft";
+            const win = window.open("about:blank", "_blank");
 
-        // 1. Open the about:blank window
-        var win = window.open('about:blank', '_blank');
+            if (win) {
+                // Write iframe into the new tab
+                win.document.title = "Launcher";
+                win.document.body.style.margin = "0";
+                win.document.body.style.height = "100vh";
 
-        if (win) {
-            // 2. Set up the blank page styles
-            win.document.title = "Classes";
-            win.document.body.style.margin = '0';
-            win.document.body.style.height = '100vh';
-            win.document.body.style.overflow = 'hidden';
+                const iframe = win.document.createElement("iframe");
+                iframe.src = url;
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
 
-            // 3. Create and inject the iframe
-            var iframe = win.document.createElement('iframe');
-            iframe.style.border = 'none';
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.margin = '0';
-            iframe.src = gameUrl;
-            
-            win.document.body.appendChild(iframe);
-
-            // 4. Redirect the current GitHub tab to look innocent
-            window.location.replace("https://classroom.google.com");
-        } else {
-            // If the browser blocks the popup, show a start button
-            document.body.innerHTML = "<h1>Click to launch Classroom</h1><button onclick='location.reload()'>Launch</button>";
+                win.document.body.appendChild(iframe);
+            } else {
+                // Popup blocked
+                document.getElementById("warning").style.display = "block";
+                document.getElementById("arrow").style.display = "block";
+            }
         }
     </script>
+
 </body>
 </html>
