@@ -1,73 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Launcher</title>
+    <title>Home - Classroom</title>
+
+    <!-- Your own favicon/logo -->
+    <link rel="icon" type="image/png" href="https://your-site.com/logo.png">
+
     <style>
         body {
-            background-color: black;
-            color: white;
-            font-family: sans-serif;
+            font-family: Arial, sans-serif;
             text-align: center;
-            padding-top: 60px;
+            padding-top: 50px;
         }
-        #arrow {
-            font-size: 40px;
-            display: none;
-            margin-top: 20px;
-        }
-        #warning {
-            display: none;
-            margin-top: 10px;
-        }
+
         button {
-            padding: 12px 28px;
-            font-size: 18px;
-            border: none;
-            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 16px;
             cursor: pointer;
-        }
-        img {
-            width: 120px;
-            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Google Classroom logo (allowed as decoration) -->
-    <img src="https://ssl.gstatic.com/classroom/ic_product_classroom_96.png" alt="Google Classroom">
+<button onclick="launchApp()">Open Portal</button>
 
-    <h1>Launch Website</h1>
-    <button onclick="launch()">Launch</button>
+<script>
+function launchApp() {
+    const appUrl = "https://takaiwebsite.neocities.org/minecraft";
 
-    <div id="warning">Popup blocked — check the top right of your browser.</div>
-    <div id="arrow">⬆️</div>
+    const win = window.open("", "_blank");
 
-    <script>
-        function launch() {
-            const url = "https://takaiwebsite.neocities.org/minecraft";
-            const win = window.open("about:blank", "_blank");
+    if (!win) {
+        alert("Popup blocked. Please allow popups.");
+        return;
+    }
 
-            if (win) {
-                // Write iframe into the new tab
-                win.document.title = "Launcher";
-                win.document.body.style.margin = "0";
-                win.document.body.style.height = "100vh";
+    win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Home - Classroom</title>
+            <link rel="icon" type="image/png" href="https://your-site.com/logo.png">
+            <style>
+                html, body {
+                    margin: 0;
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                }
+                iframe {
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                }
+            </style>
+        </head>
+        <body>
+            <iframe src="${appUrl}"></iframe>
+        </body>
+        </html>
+    `);
 
-                const iframe = win.document.createElement("iframe");
-                iframe.src = url;
-                iframe.style.width = "100%";
-                iframe.style.height = "100%";
-                iframe.style.border = "none";
-
-                win.document.body.appendChild(iframe);
-            } else {
-                // Popup blocked
-                document.getElementById("warning").style.display = "block";
-                document.getElementById("arrow").style.display = "block";
-            }
-        }
-    </script>
+    win.document.close();
+}
+</script>
 
 </body>
 </html>
