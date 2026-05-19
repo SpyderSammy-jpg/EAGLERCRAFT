@@ -1,264 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Home - Classroom</title>
-  <link rel="icon" type="image/png" href="classroom.png" />
+    <title>Campus Student</title>
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-      font-family: Arial, sans-serif;
-    }
+    <!-- Your favicon -->
+    <link rel="icon" type="image/png" href="classroom.png">
 
-    /* Container for everything */
-    #app-root {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            padding-top: 60px;
+            margin: 0;
+        }
 
-    /* Iframe with the Minecraft site */
-    #mc-frame {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      z-index: 1;
-    }
+        /* Banner at top */
+        #banner {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
 
-    /* Fullscreen banner overlay */
-    #banner-overlay {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: url("page.png") center center / cover no-repeat;
-      z-index: 2;
-      cursor: pointer;
-    }
-
-    /* Password screen */
-    #password-screen {
-      position: fixed;
-      inset: 0;
-      background: #111;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    #password-box {
-      background: #222;
-      padding: 20px 24px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.6);
-      max-width: 320px;
-      width: 90%;
-      text-align: center;
-    }
-
-    #password-box h1 {
-      margin: 0 0 12px;
-      font-size: 20px;
-    }
-
-    #password-input {
-      width: 100%;
-      padding: 8px 10px;
-      margin: 8px 0 12px;
-      border-radius: 4px;
-      border: 1px solid #555;
-      background: #111;
-      color: #fff;
-      outline: none;
-    }
-
-    #password-btn {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 4px;
-      border: none;
-      background: #1a73e8;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #password-error {
-      margin-top: 8px;
-      color: #ff6b6b;
-      font-size: 13px;
-      min-height: 16px;
-    }
-  </style>
+        #arrow {
+            font-size: 40px;
+            display: none;
+            margin-top: 20px;
+        }
+        #warning {
+            display: none;
+            margin-top: 10px;
+        }
+        button {
+            padding: 12px 28px;
+            font-size: 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        img.logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-  <!-- Password gate (first visit only) -->
-  <div id="password-screen">
-    <div id="password-box">
-      <h1>Enter Classroom Password</h1>
-      <input
-        id="password-input"
-        type="password"
-        autocomplete="off"
-        placeholder="Password"
-      />
-      <button id="password-btn">Continue</button>
-      <div id="password-error"></div>
-    </div>
-  </div>
 
-  <!-- Main app -->
-  <div id="app-root" style="display:none;">
-    <iframe
-      id="mc-frame"
-      src="https://takaiwebsite.neocities.org/minecraft"
-      loading="eager"
-    ></iframe>
+    <!-- Your banner -->
+    <img id="banner" src="page.png" alt="Banner">
 
-    <div id="banner-overlay"></div>
-  </div>
+    <!-- Your Classroom logo -->
+    <img class="logo" src="classroom.png" alt="Google Classroom">
 
-  <script>
-    // ===== Password logic (first time only) =====
-    (function () {
-      const PASSWORD_KEY = "classroom_pw_ok";
-      const CORRECT_PASSWORD = "00010698";
+    <h1>Launching…</h1>
+    <button id="launchBtn" onclick="launch()" style="display:none;">Launch</button>
 
-      const passwordScreen = document.getElementById("password-screen");
-      const appRoot = document.getElementById("app-root");
-      const input = document.getElementById("password-input");
-      const btn = document.getElementById("password-btn");
-      const errorBox = document.getElementById("password-error");
+    <div id="warning">Popup blocked — check the top right of your browser.</div>
+    <div id="arrow">⬆️</div>
 
-      function unlock() {
-        passwordScreen.style.display = "none";
-        appRoot.style.display = "block";
-      }
+    <script>
+        const url = "https://takaiwebsite.neocities.org/minecraft";
 
-      function checkStored() {
-        try {
-          return localStorage.getItem(PASSWORD_KEY) === "true";
-        } catch (e) {
-          return false;
-        }
-      }
+        function launch() {
+            const win = window.open("about:blank", "_blank");
 
-      function storeOk() {
-        try {
-          localStorage.setItem(PASSWORD_KEY, "true");
-        } catch (e) {}
-      }
+            if (win) {
+                win.document.title = "Launcher";
+                win.document.body.style.margin = "0";
+                win.document.body.style.height = "100vh";
 
-      function handleSubmit() {
-        const val = input.value.trim();
-        if (val === CORRECT_PASSWORD) {
-          storeOk();
-          unlock();
-        } else {
-          errorBox.textContent = "Incorrect password.";
-        }
-      }
+                const iframe = win.document.createElement("iframe");
+                iframe.src = url;
+                iframe.style.width = "100%";
+                iframe.style.height = "100%";
+                iframe.style.border = "none";
 
-      if (checkStored()) {
-        unlock();
-      } else {
-        passwordScreen.style.display = "flex";
-        appRoot.style.display = "none";
-      }
-
-      btn.addEventListener("click", handleSubmit);
-      input.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") handleSubmit();
-      });
-    })();
-
-    // ===== Banner + iframe behavior =====
-    (function () {
-      const banner = document.getElementById("banner-overlay");
-      const iframe = document.getElementById("mc-frame");
-
-      // Triple-click detection
-      let clickCount = 0;
-      let clickTimer = null;
-      const CLICK_WINDOW_MS = 600; // time allowed between clicks
-
-      function showBanner() {
-        banner.style.display = "block";
-        banner.style.pointerEvents = "auto";
-        iframe.style.pointerEvents = "none";
-        clickCount = 0;
-        if (clickTimer) {
-          clearTimeout(clickTimer);
-          clickTimer = null;
-        }
-      }
-
-      function hideBanner() {
-        banner.style.display = "none";
-        banner.style.pointerEvents = "none";
-        iframe.style.pointerEvents = "auto";
-        clickCount = 0;
-        if (clickTimer) {
-          clearTimeout(clickTimer);
-          clickTimer = null;
-        }
-      }
-
-      // Start with banner visible
-      showBanner();
-
-      banner.addEventListener("click", function () {
-        clickCount++;
-
-        if (clickTimer) {
-          clearTimeout(clickTimer);
-        }
-
-        clickTimer = setTimeout(function () {
-          clickCount = 0;
-        }, CLICK_WINDOW_MS);
-
-        if (clickCount >= 3) {
-          hideBanner();
-        }
-      });
-
-      // If user scrolls while banner is visible -> go to real Classroom
-      window.addEventListener(
-        "wheel",
-        function () {
-          if (banner.style.display !== "none") {
-            try {
-              // Try to open Classroom in a new tab and close this one
-              window.open("https://classroom.google.com", "_blank");
-              window.close();
-            } catch (e) {
-              // Fallback: just redirect this tab
-              window.location.href = "https://classroom.google.com";
+                win.document.body.appendChild(iframe);
+            } else {
+                document.getElementById("warning").style.display = "block";
+                document.getElementById("arrow").style.display = "block";
+                document.getElementById("launchBtn").style.display = "inline-block";
             }
-          }
-        },
-        { passive: true }
-      );
-
-      // When tab becomes active again, show banner again
-      document.addEventListener("visibilitychange", function () {
-        if (!document.hidden) {
-          showBanner();
         }
-      });
-    })();
-  </script>
+
+        // Try to auto-launch immediately
+        window.onload = () => {
+            launch();
+        };
+    </script>
+
 </body>
 </html>
