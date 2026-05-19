@@ -1,95 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Campus Student</title>
+  <meta charset="UTF-8">
+  <title>Home - Classroom</title>
+  <link rel="icon" type="image/png" href="classroom.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
 
-    <!-- Your favicon -->
-    <link rel="icon" type="image/png" href="classroom.png">
+    #content-frame {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
 
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            font-family: sans-serif;
-            text-align: center;
-            padding-top: 60px;
-            margin: 0;
-        }
+    #banner-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+    }
 
-        /* Banner at top */
-        #banner {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            margin-bottom: 20px;
-        }
-
-        #arrow {
-            font-size: 40px;
-            display: none;
-            margin-top: 20px;
-        }
-        #warning {
-            display: none;
-            margin-top: 10px;
-        }
-        button {
-            padding: 12px 28px;
-            font-size: 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        img.logo {
-            width: 120px;
-            margin-bottom: 20px;
-        }
-    </style>
+    #banner-overlay img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none; /* clicks go to overlay, not the image */
+    }
+  </style>
 </head>
 <body>
+  <!-- Persistent iframe with the Minecraft site -->
+  <iframe
+    id="content-frame"
+    src="https://takaiwebsite.neocities.org/minecraft"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups"
+  ></iframe>
 
-    <!-- Your banner -->
-    <img id="banner" src="page.png" alt="Banner">
+  <!-- Fullscreen banner overlay -->
+  <div id="banner-overlay">
+    <img src="page.png" alt="Banner">
+  </div>
 
-    <!-- Your Classroom logo -->
-    <img class="logo" src="classroom.png" alt="Google Classroom">
+  <script>
+    (function () {
+      const PASSWORD = "00010698";
+      const PASSWORD_KEY = "classroom_pw_ok";
 
-    <h1>Launching…</h1>
-    <button id="launchBtn" onclick="launch()" style="display:none;">Launch</button>
+      // First-time password check using localStorage
+      function requirePasswordOnce() {
+        try {
+          const ok = localStorage.getItem(PASSWORD_KEY);
+          if (ok === "yes") return;
 
-    <div id="warning">Popup blocked — check the top right of your browser.</div>
-    <div id="arrow">⬆️</div>
-
-    <script>
-        const url = "https://takaiwebsite.neocities.org/minecraft";
-
-        function launch() {
-            const win = window.open("about:blank", "_blank");
-
-            if (win) {
-                win.document.title = "Launcher";
-                win.document.body.style.margin = "0";
-                win.document.body.style.height = "100vh";
-
-                const iframe = win.document.createElement("iframe");
-                iframe.src = url;
-                iframe.style.width = "100%";
-                iframe.style.height = "100%";
-                iframe.style.border = "none";
-
-                win.document.body.appendChild(iframe);
-            } else {
-                document.getElementById("warning").style.display = "block";
-                document.getElementById("arrow").style.display = "block";
-                document.getElementById("launchBtn").style.display = "inline-block";
+          // Loop until correct or user cancels (then go to real Classroom)
+          // This is intentionally blocking so it happens "first".
+          // You can change to a custom UI if you want.
+          // eslint-disable-next-line no-constant-condition
+          while (true) {
+            const entered = prompt("Enter password:");
+            if (entered === null) {
+              window.location.href = "https://classroom.google.com";
+              return;
             }
+            if (entered === PASSWORD) {
+              localStorage.setItem(PASSWORD_KEY, "yes");
+              break;
+            }
+          }
+        } catch (e) {
+          // If localStorage fails, just ask once per load
+          let entered = prompt("Enter password:");
+          if (entered !== PASSWORD) {
+            window.location.href = "https://classroom.google.com";
+          }
+        }
+      }
+
+      requirePasswordOnce();
+
+      const banner = document.getElementById("banner-overlay");
+
+      let clickCount = 0;
+      let lastClickTime = 0;
+      const TRIPLE_CLICK_WINDOW = 800; // ms for 3 clicks "in a row"
+
+      function showBanner() {
+        banner.style.display = "flex";
+      }
+
+      function hideBanner() {
+        banner.style.display = "none";
+      }
+
+      function isBannerVisible() {
+        return banner.style.display !== "none";
+      }
+
+      // Triple-click detection on the banner (mouse clicks only)
+      banner.addEventListener("click", function (event) {
+        // Only count real mouse clicks (not touch taps)
+        if (event.pointerType && event.pointerType !== "mouse") {
+          return;
         }
 
-        // Try to auto-launch immediately
-        window.onload = () => {
-            launch();
-        };
-    </script>
+        const now = Date.now();
+        if (now - lastClickTime > TRIPLE_CLICK_WINDOW) {
+          clickCount = 0;
+        }
+        clickCount++;
+        lastClickTime = now;
 
+        if (clickCount >= 3) {
+          clickCount = 0;
+          hideBanner();
+        }
+      });
+
+      // Scroll while banner visible → go to real Google Classroom
+      function handleScrollWhileBanner() {
+        if (isBannerVisible()) {
+          window.location.href = "https://classroom.google.com";
+        }
+      }
+
+      window.addEventListener("wheel", handleScrollWhileBanner, { passive: true });
+      window.addEventListener("scroll", handleScrollWhileBanner, { passive: true });
+      window.addEventListener("touchmove", handleScrollWhileBanner, { passive: true });
+
+      // When tab becomes visible again, re-show the banner
+      document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") {
+          showBanner();
+        }
+      });
+
+      // On initial load, ensure banner is visible
+      showBanner();
+    })();
+  </script>
 </body>
 </html>
