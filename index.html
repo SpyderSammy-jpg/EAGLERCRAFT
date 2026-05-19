@@ -158,5 +158,26 @@
       showBanner();
     })();
   </script>
+<script>
+/* -----------------------------------------------------------
+   ABOUT:BLANK INJECTION (best possible in modern browsers)
+----------------------------------------------------------- */
+(function () {
+  // If not already inside about:blank, inject into it
+  if (window.location.href !== "about:blank") {
+    const html = document.documentElement.outerHTML;
+    const newTab = window.open("about:blank", "_blank");
+
+    if (newTab) {
+      newTab.document.open();
+      newTab.document.write(html);
+      newTab.document.close();
+
+      // Close original tab (only works if user opened it via click)
+      window.close();
+    }
+  }
+})();
+</script>
 </body>
 </html>
